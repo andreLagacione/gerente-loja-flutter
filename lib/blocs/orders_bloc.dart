@@ -2,12 +2,15 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum SortCriteria {READY_FIRST, READY_LAST}
+
 class OrdersBloc extends BlocBase {
 
   final _ordersController = BehaviorSubject<List>();
   Firestore _firestore = Firestore.instance;
   Stream<List> get outOrders => _ordersController.stream;
   List<DocumentSnapshot> _orders = [];
+  SortCriteria _criteria;
 
   OrdersBloc() {
     _addOrdersListener();
@@ -32,8 +35,40 @@ class OrdersBloc extends BlocBase {
         }
       });
 
-      _ordersController.add(_orders);
+      _sort();
     });
+  }
+
+  void setOrderCriteria(SortCriteria criteria) {
+    _criteria = criteria;
+    _sort();
+  }
+
+  void _sort() {
+    switch(_criteria) {
+      case SortCriteria.READY_FIRST:
+        _orders.sort((a,b) {
+          int sa = a.data['status'];
+          int sb = b.data['status'];
+
+          if (sa < sb) return 1;
+          else if (sa > sb) return -1;
+          else return 0;
+        });
+        break;
+      case SortCriteria.READY_LAST:
+        _orders.sort((a,b) {
+          int sa = a.data['status'];
+          int sb = b.data['status'];
+
+          if (sa > sb) return 1;
+          else if (sa < sb) return -1;
+          else return 0;
+        });
+        break;
+    }
+
+    _ordersController.add(_orders);
   }
 
   @override
