@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gerenteloja/blocs/product_bloc.dart';
 import 'package:gerenteloja/validators/porduct_validator.dart';
 import 'package:gerenteloja/widgets/images_widget.dart';
+import 'package:gerenteloja/widgets/product_sizes.dart';
 
 class ProductScreen extends StatefulWidget {
 
@@ -132,6 +133,22 @@ class _ProductScreenState extends State<ProductScreen> with ProductValidator {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       onSaved: _productBloc.savePrice,
                       validator: validatePrice,
+                    ),
+                    SizedBox(height: 16,),
+                    Text(
+                      'Tamanhos',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12
+                      ),
+                    ),
+                    ProductSizes(
+                      context: context,
+                      initialValue: snapshot.data['sizes'],
+                      onSaved: _productBloc.saveSizes,
+                      validator: (s) {
+                        if (s.isEmpty) return 'Adicione um tamanho';
+                      },
                     )
                   ],
                 );
