@@ -33,7 +33,7 @@ class CategoryBloc extends BlocBase {
 
   CategoryBloc(this.category) {
     if (category != null) {
-      title = category.data['title'];
+      this.title = category.data['title'];
       _titleController.add(category.data['title']);
       _imageController.add(category.data['icon']);
       _deleteController.add(true);
@@ -47,7 +47,7 @@ class CategoryBloc extends BlocBase {
     _imageController.add(file);
   }
   void setTitle(String title) {
-    title = title;
+    this.title = title;
     _titleController.add(title);
   }
 
@@ -56,8 +56,7 @@ class CategoryBloc extends BlocBase {
   }
 
   Future saveData() async {
-    print(category);
-    if (image == null && category != null && title == category.data['title']) {
+    if (category != null && this.title == category.data['title']) {
       return;
     }
 
@@ -68,9 +67,6 @@ class CategoryBloc extends BlocBase {
       StorageTaskSnapshot snap = await task.onComplete;
       dataToUpdate['icon'] = await snap.ref.getDownloadURL();
     }
-
-    print(category.data['title']);
-    print(title);
 
     if (category == null || title != category.data['title']) {
       dataToUpdate['title'] = title;
